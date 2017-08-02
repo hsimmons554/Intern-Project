@@ -1,63 +1,39 @@
 <?php
 function connect_database () {
-	try {/*
-	    $db = new PDO('mysql:host=localhost;dbname=InternProject1', 'root', 'root');
-	    // set the PDO error mode to exception
-	    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	    $query = 'CREATE DATABASE InternProject1';
-	    // use exec() because no results are returned
-	    //$db->exec($query);
-			$db->prepare($query);
-			$db->execute();
-	    echo "Database created successfully<br>";
-	    }
+	try {
+			global $db;
+			$db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
+		}
 	catch(PDOException $e)
-	    {
-	    echo $query . "<br>" . $e->getMessage();
-	    }
-
-*/
-global $db;
-	$db = new PDO('mysql:host=localhost;dbname=InternProject1', 'root', 'root');
-	//$db = new PDO('mysql:host=localhost' 'root', 'root');
-	// set the PDO error mode to exception
-	//$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	//$query = 'CREATE DATABASE InternProject1';
-	// use exec() because no results are returned
-	//$db->exec($query);
-	//$db->prepare($query);
-	//$db->execute();
-	//echo "Database created successfully<br>";
-	//echo 'Created PDO successfully';
-	}
-catch(PDOException $e)
-	{
-	echo $query . "<br>" . $e->getMessage();
-	}
+		{
+			echo "No database: <br>" . $e->getMessage();
+			$conn = new mysqli("localhost", "root", "root");
+			if(!$conn){
+				echo 'failed to connect';
+			} else {
+				$sql = 'CREATE DATABASE Intern_Project1';
+				if ($conn->query($sql) === TRUE) {echo 'Database Created successfully';}
+				header('Location: index.php');
+			}
+		}
   }
 
 function check_add_people_table () {
-//echo 'entered check people function';
 global $db;
-//echo 'set global db variable';
 $query = 'SELECT id FROM people LIMIT 1';
-//$query = 'SELECT * FROM information_schema WHERE TABLE_NAME = people';
 $statement = $db->prepare($query);
 $statement->execute();
 $array = $statement->fetch();
-//val = msql_query('select 1 from people LIMIT 1');
-if($array['first_name'] !== FALSE)
-//if($val !== FALSE)
-{
 
+if(array_key_exists('id', $array))
+{
 	//table exists
-	echo 'The people table already exists';
-	print_r($statement);
-	//$statement->closeCursor();
+	echo 'The people table already exists<br>';
+	$statement->closeCursor();
 } else
 {
-	//$statement->closeCursor();
 	//table does not exist
+	$statement->closeCursor();
 	$query = 'CREATE TABLE people (
 			id int NOT NULL AUTO_INCREMENT,
 			first_name varchar(60),
@@ -68,19 +44,19 @@ if($array['first_name'] !== FALSE)
 	$statement2 = $db->prepare($query);
 	$statement2->execute();
 	$statement2->closeCursor();
-	echo 'finished adding table';
 }
 }
 
 function check_add_states_table () {
 	global $db;
-	$query = 'SELECT 1 FROM states
+	$query = 'SELECT id FROM states
 			LIMIT 1';
 	$statement = $db->prepare($query);
 	$statement->execute();
+	$array = $statement->fetch();
 
-	if ($statement !== FALSE) {
-		echo 'The states table already exists';
+	if (array_key_exists('id', $array)) {
+		echo 'The states table already exists<br>';
 		$statement->closeCursor();
 	} else {
 		$statement->closeCursor();
@@ -104,28 +80,32 @@ function check_add_states_table () {
 
 	$statement2 = $db->prepare($query);
 	$statement2->execute();
-	$statement2->prepare($query2);
-	$statement2->execute();
 	$statement2->closeCursor();
+	$statement3 = $db->prepare($query2);
+	$statement3->execute();
+	$statement3->closeCursor();
+
 	}
 }
 
 	function check_add_visits_table () {
+
 	global $db;
-	$query = 'SELECT 1 FROM visits
+	$query = 'SELECT id FROM visits
 		  LIMIT 1';
 	$statement = $db->prepare($query);
 	$statement->execute();
+	$array = $statement->fetch();
 
-	if($statement !== FALSE)
+	if(array_key_exists('id', $array))
 	{
 		//table exists
-		echo 'The visits table already exists';
+		echo 'The visits table already exists<br>';
 		$statement->closeCursor();
 	} else
 	{
-		$statement->closeCursor();
 		//table does not exist
+		$statement->closeCursor();
 		$query = 'CREATE TABLE visits (
 				id int NOT NULL AUTO_INCREMENT,
 				person_id int NOT NULL,

@@ -1,8 +1,11 @@
 <?php
 require_once('init.php');
 $db;
-connect_database();
-//check_add_people_table();
+    // Use init.php to set up database and tables if they don't exist
+    connect_database();
+    check_add_people_table();
+    check_add_states_table();
+    check_add_visits_table();
 
 $action = filter_input(INPUT_POST, 'action');
 if ($action == NULL) {
@@ -88,16 +91,16 @@ function add_visit($id, $person, $state) {
 
 function get_people() {
   try {
-  global $db;
-  $query = 'SELECT * FROM people';
-  $statement = $db->prepare($query);
-  $statement->execute();
-  $people = $statement->fetchAll();
-  $statement->closeCursor();
-  return $people;
-} catch(\Exception $e) {
-  echo $e->getMessage();
-}
+    global $db;
+    $query = 'SELECT * FROM people';
+    $statement = $db->prepare($query);
+    $statement->execute();
+    $people = $statement->fetchAll();
+    $statement->closeCursor();
+    return $people;
+  } catch(\Exception $e) {
+    echo $e->getMessage();
+  }
 }
 
 function get_states() {
