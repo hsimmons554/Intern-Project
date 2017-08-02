@@ -1,3 +1,4 @@
+<!-- Project 2 -->
 <?php
 require_once('init.php');
 $db;
