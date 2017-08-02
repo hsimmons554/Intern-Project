@@ -1,7 +1,15 @@
 <?php
+$db;
+
+connect_database();
+check_add_people_table();
+check_add_states_table();
+check_add_visits_table();
+
+//Functions
 function connect_database () {
+	global $db;
 	try {
-			global $db;
 			$db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
 		}
 	catch(PDOException $e)
@@ -13,38 +21,38 @@ function connect_database () {
 			} else {
 				$sql = 'CREATE DATABASE Intern_Project1';
 				if ($conn->query($sql) === TRUE) {echo 'Database Created successfully';}
-				header('Location: index.php');
+				$db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
 			}
 		}
   }
 
 function check_add_people_table () {
-global $db;
-$query = 'SELECT id FROM people LIMIT 1';
-$statement = $db->prepare($query);
-$statement->execute();
-$array = $statement->fetch();
+		global $db;
+	$query = 'SELECT id FROM people LIMIT 1';
+	$statement = $db->prepare($query);
+	$statement->execute();
+	$array = $statement->fetch();
 
-if(array_key_exists('id', $array))
-{
-	//table exists
-	echo 'The people table already exists<br>';
-	$statement->closeCursor();
-} else
-{
-	//table does not exist
-	$statement->closeCursor();
-	$query = 'CREATE TABLE people (
-			id int NOT NULL AUTO_INCREMENT,
-			first_name varchar(60),
-			last_name varchar(60),
-			favorite_food varchar(200),
-			PRIMARY KEY (id)
-		)';
-	$statement2 = $db->prepare($query);
-	$statement2->execute();
-	$statement2->closeCursor();
-}
+	if(array_key_exists('id', $array))
+	{
+		//table exists
+		echo 'The people table already exists<br>';
+		$statement->closeCursor();
+	} else
+	{
+		//table does not exist
+		$statement->closeCursor();
+		$query = 'CREATE TABLE people (
+				id int NOT NULL AUTO_INCREMENT,
+				first_name varchar(60),
+				last_name varchar(60),
+				favorite_food varchar(200),
+				PRIMARY KEY (id)
+			)';
+		$statement2 = $db->prepare($query);
+		$statement2->execute();
+		$statement2->closeCursor();
+	}
 }
 
 function check_add_states_table () {

@@ -1,12 +1,8 @@
 <!-- Project 2 -->
 <?php
-require_once('init.php');
+
 $db;
-    // Use init.php to set up database and tables if they don't exist
-    connect_database();
-    check_add_people_table();
-    check_add_states_table();
-    check_add_visits_table();
+connect_database();
 
 $action = filter_input(INPUT_POST, 'action');
 if ($action == NULL) {
@@ -160,4 +156,8 @@ function get_last_visit_id() {
   $statement->closeCursor();
   return $id;
 }
+function connect_database () {
+	global $db;
+	$db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
+  }
  ?>
