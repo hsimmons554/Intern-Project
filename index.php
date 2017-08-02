@@ -3,7 +3,7 @@ require_once('init.php');
 $db;
 connect_database();
 //check_add_people_table();
-//comments
+
 $action = filter_input(INPUT_POST, 'action');
 if ($action == NULL) {
   $action = filter_input(INPUT_GET, 'action');
@@ -33,13 +33,28 @@ switch($action) {
     } else {
     $id_num = get_last_person_id();
     add_person($id_num['MAX(id)'], $fname, $lname, $food);
-    header('Location: .');
+    header('Location: index.php');
   }
     break;
     case 'show_add_person':
     include('./view/add_person_form.php');
     break;
     case 'show_add_visit':
+    $persons = get_people();
+    $states = get_states();
+    include('./view/add_visit_form.php');
+    break;
+    case 'add_visit':
+    $person_id = filter_input(INPUT_GET, 'person_id', FILTER_VALIDATE_INT);
+    $state_id = filter_input(INPUT_GET, 'state_id', FILTER_VALIDATE_INT);
+
+    if ($person_id == NULL || $person_id == FALSE || $state_id == NULL || $state_id == FALSE) {
+      echo 'Something went wrong sending selections to index file.';
+    } else {
+      $id_num = get_last_visit_id();
+      add_visit($id_num['MAX(id)'], $person_id, $state_id);
+      header('Location: index.php');
+    }
     break;
 }
 
@@ -58,6 +73,18 @@ function add_person($id, $first_name, $last_name, $fav_food) {
     $statement->closeCursor();
 }
 
+function add_visit($id, $person, $state) {
+  global $db;
+  $id = $id + 1;
+  $query = 'INSERT INTO visits VALUES (:id, :person, :state)';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':id', $id);
+  $stm->bindValue(':person', $person);
+  $stm->bindValue(':state', $state);
+  $stm->execute();
+  $stm->closeCursor();
+}
+
 function get_people() {
   try {
   global $db;
@@ -70,6 +97,16 @@ function get_people() {
 } catch(\Exception $e) {
   echo $e->getMessage();
 }
+}
+
+function get_states() {
+  global $db;
+  $query = 'SELECT * FROM states';
+  $stm = $db->prepare($query);
+  $stm->execute();
+  $states = $stm->fetchAll();
+  $stm->closeCursor();
+  return $states;
 }
 
 function get_indiv_stats($id) {
@@ -87,6 +124,16 @@ function get_indiv_stats($id) {
 function get_last_person_id() {
   global $db;
   $query = 'SELECT MAX(id) FROM people';
+  $statement = $db->prepare($query);
+  $statement->execute();
+  $id = $statement->fetch();
+  $statement->closeCursor();
+  return $id;
+}
+
+function get_last_visit_id() {
+  global $db;
+  $query = 'SELECT MAX(id) FROM visits';
   $statement = $db->prepare($query);
   $statement->execute();
   $id = $statement->fetch();

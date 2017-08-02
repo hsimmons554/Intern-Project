@@ -59,7 +59,7 @@ if($array['first_name'] !== FALSE)
 	//$statement->closeCursor();
 	//table does not exist
 	$query = 'CREATE TABLE people (
-			id int NOT NULL,
+			id int NOT NULL AUTO_INCREMENT,
 			first_name varchar(60),
 			last_name varchar(60),
 			favorite_food varchar(200),
@@ -85,31 +85,22 @@ function check_add_states_table () {
 	} else {
 		$statement->closeCursor();
 		$query = 'CREATE TABLE states (
-				id int NOT NULL,
+				id int NOT NULL AUTO_INCREMENT,
 				state_name varchar(60),
 				state_abbreviation varchar(2),
 				PRIMARY KEY (id)
 		)';
 		$query2 = "INSERT INTO states
-							 VALUES (1, 'Louisiana', 'LA');
-							 INSERT INTO states
-							 VALUES (2, 'Texas', 'TX');
-							 INSERT INTO states
-							 VALUES (3, 'California', 'CA');
-							 INSERT INTO states
-							 VALUES (4, 'Mississippi', 'MS');
-							 INSERT INTO states
-					 		 VALUES (5, 'Main', 'ME');
-					 		 INSERT INTO states
-					 		 VALUES (6, 'Missouri', 'MO');
-					 		 INSERT INTO states
-					 		 VALUES (7, 'Arkansas', 'AR');
-					 		 INSERT INTO states
-					 		 VALUES (8, 'New Jersey', 'NJ');
-							 INSERT INTO states
-					  	 VALUES (9, 'New York', 'NY');
-					   	 INSERT INTO states
-					 		 VALUES (10, 'Ohio', 'OH')";
+							 VALUES (1, 'Louisiana', 'LA'),
+							 (2, 'Texas', 'TX'),
+							 (3, 'California', 'CA'),
+							 (4, 'Mississippi', 'MS'),
+					 		 (5, 'Main', 'ME'),
+					 		 (6, 'Missouri', 'MO'),
+					 		 (7, 'Arkansas', 'AR'),
+					 		 (8, 'New Jersey', 'NJ'),
+					  	 (9, 'New York', 'NY'),
+					 		 (10, 'Ohio', 'OH')";
 
 	$statement2 = $db->prepare($query);
 	$statement2->execute();
@@ -136,10 +127,10 @@ function check_add_states_table () {
 		$statement->closeCursor();
 		//table does not exist
 		$query = 'CREATE TABLE visits (
-				id int NOT NULL,
+				id int NOT NULL AUTO_INCREMENT,
 				person_id int NOT NULL,
 				state_id int NOT NULL,
-				PRIMARY KEY (id)
+				PRIMARY KEY (id),
 				FOREIGN KEY (person_id) REFERENCES people(id),
 				FOREIGN KEY (state_id) REFERENCES states(id)
 			)';

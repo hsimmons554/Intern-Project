@@ -22,7 +22,7 @@
   <input type="submit" value="Submit Person" />
 </form><br>
 <?php if($flag) : ?>
-  <label>Name: <?php echo $person_stats['first_name'] . $person_stats['last_name']; ?></label><br>
+  <label>Name: <?php echo $person_stats['first_name'] . ' ' . $person_stats['last_name']; ?></label><br>
   <label>Food: <?php echo $person_stats['favorite_food']; ?></label><br>
   <label>States: </label>
 <?php endif; ?>
