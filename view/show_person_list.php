@@ -24,5 +24,12 @@
 <?php if($flag) : ?>
   <label>Name: <?php echo $person_stats['first_name'] . ' ' . $person_stats['last_name']; ?></label><br>
   <label>Food: <?php echo $person_stats['favorite_food']; ?></label><br>
-  <label>States: </label>
+  <?php if(!empty($visits)) : ?>
+    <label>States:</label><br>
+    <?php foreach ($visits as $visit) : ?>
+      <label>&nbsp;</label><label> <?php echo $visit['state_name']; ?></label><br>
+    <?php endforeach; ?>
+  <?php else : ?>
+    <?php {echo '<label>States: None</label>'; break;} ?>
+  <?php endif; ?>
 <?php endif; ?>

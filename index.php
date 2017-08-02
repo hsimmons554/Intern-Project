@@ -21,6 +21,7 @@ switch($action) {
     $persons = get_people();
     $person_id = filter_input(INPUT_GET, 'person_id', FILTER_VALIDATE_INT);
     $person_stats = get_indiv_stats($person_id);
+    $visits = get_persons_visits($person_id);
     $flag = TRUE;
     include('./view/show_person_list.php');
     break;
@@ -107,6 +108,21 @@ function get_states() {
   $states = $stm->fetchAll();
   $stm->closeCursor();
   return $states;
+}
+
+function get_persons_visits($person_id) {
+  global $db;
+  $query = 'SELECT visits.id, people.id, states.state_name
+            FROM visits INNER JOIN people
+            ON visits.person_id = people.id INNER JOIN states
+            ON visits.state_id = states.id
+            WHERE people.id = :person';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':person', $person_id);
+  $stm->execute();
+  $visits = $stm->fetchAll();
+  $stm->closeCursor();
+  return $visits;
 }
 
 function get_indiv_stats($id) {
