@@ -3,7 +3,7 @@ require_once('init.php');
 $db;
 connect_database();
 //check_add_people_table();
-
+//comments
 $action = filter_input(INPUT_POST, 'action');
 if ($action == NULL) {
   $action = filter_input(INPUT_GET, 'action');
