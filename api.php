@@ -3,11 +3,10 @@ define('PEOPLE', 'people');
 define('STATES', 'states');
 define('VISITS', 'visits');
 
-$method = $_SERVER['REQUEST_METHOD'];
+//$method = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
 $paths = parse_url($uri);
 $uri_path = explode('/', $paths['path']);
-//print_r $uri_path;
 
 $apiVars = [];
 $req_info = [];
@@ -25,7 +24,8 @@ while($i < count($uri_path)) {
 
 //Establish database connection
 $db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
-
+$prev_key = '';
+$prev_id = '';
 $sections = count($apiVars);
 
 switch($sections) {
@@ -36,7 +36,8 @@ switch($sections) {
   case 1:
   try {
       foreach ($apiVars as $key => $id) {
-        $req_info = get_1_tier_table($key, $id);
+        $req_info = get_json_table($prev_key, $prev_id, $key, $id);
+        $req_info = encode_in_json($req_info);
     }
   } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage();
@@ -45,42 +46,47 @@ switch($sections) {
 
   // ends with /api/TABLE_NAME/id_num/Col_name
   case 2:
-  $prev_key = '';
-  $prev_id = '';
-  //$json_array = [];
-
-  /*
-  print_r($apiVars);
-  $json = json_encode($apiVars);
-  print_r($json);
-  $json = json_decode($json);
-  print_r($json);
-  foreach ($json as $obj){
-    echo $obj->name;
-  }*/
   foreach ($apiVars as $key => $id) {
-    $array = get_1_tier_table($key, $id, $prev_key, $pre_id);
-    $req_info['$key'] = $array;
+    $array = get_json_table($prev_key, $prev_id, $key, $id);
+    $req_info[$key] = $array;
     $prev_key = $key;
     $prev_id = $id;
   }
+  $req_info = encode_in_json($req_info);
   break;
 }
 
 header('application/json');
-//print_r($apiVars);
-//print_r($uri_path);
-//print_r($apiVars);
 print_r($req_info);
-//echo(json_encode($apiVars));
-//echo(json_encode($req_info));
-
-
 die();
 
 //Functions
-function get_1_tier_table($table, $id = '', $outer_table = '', $outer_id = '') {
-  if (isset($id) && strcasecmp($table, PEOPLE) == 0) {
+function get_json_table($outer_table = '', $outer_id = '', $table, $id = '') {
+  if (isset($id) && strcasecmp($table, VISITS) == 0 &&
+      strcasecmp($outer_table, PEOPLE) == 0 && isset($outer_id)) {
+        if(!is_numeric($id)) {
+          echo 'Incorrect ID value. Please enter a number or leave blank.';
+          die();
+        }
+        $array = query_visits_by_person($outer_id);
+        $array = remove_digit_elements($array);
+        return $array;
+  } else if (isset($outer_id) && strcasecmp($table, VISITS) == 0 &&
+              strcasecmp($outer_table, PEOPLE) == 0) {
+    $array = query_visits_by_person($outer_id);
+    $array = remove_digit_elements($array);
+    return $array;
+  } else if (isset($outer_id) && strcasecmp($table, PEOPLE) == 0 &&
+              strcasecmp($outer_table, STATES) == 0) {
+    $array = query_visits_by_state($outer_id);
+    $array = remove_digit_elements($array);
+    return $array;
+  } else if (isset($outer_id) && strcasecmp($table, STATES) == 0 &&
+              strcasecmp($outer_table, PEOPLE) == 0) {
+    $array = query_states_by_person($outer_id);
+    $array = remove_digit_elements($array);
+    return $array;
+  } else if (isset($id) && strcasecmp($table, PEOPLE) == 0) {
     if(!is_numeric($id)) {
       echo 'Incorrect ID value. Please enter a number or leave blank.';
       die();
@@ -112,30 +118,10 @@ function get_1_tier_table($table, $id = '', $outer_table = '', $outer_id = '') {
     $array = query_visits_id_table($id);
     $array = remove_digit_elements($array);
     return $array;
-  } else if (!isset($id) && strcasecmp($table, VISITS) == 0) {
+  } else if (strcasecmp($table, VISITS) == 0) {
     $array = query_visits_table();
     $array = remove_digit_elements($array);
     return $array;
-  }
-}
-
-function get_2_tier_table($table1, $id1, $table2) {
-  if (isset($id1) && strcasecmp($table1, PEOPLE) == 0 &&
-      strcasecmp($table2, VISITS) == 0) {
-    if(!is_numeric($id1)) {
-      echo 'Incorrect ID value. Please enter a number or leave blank.';
-      die();
-    }
-    $people_array = query_people_id_table($id);
-    $people_array = remove_digit_elements($people_array);
-    $people_array_en = encode_in_json($people_array);
-
-    $visits_array = query_visits_table();
-    $visits_array = remove_digit_elements($visits_array);
-    $visits_array_en = encoce_in_json($visits_array);
-
-    $people_array_en['visits'] = $visits_array_en;
-    return $people_array_en;
   }
 }
 
@@ -199,6 +185,20 @@ function query_states_id_table($id) {
   return $array;
 }
 
+function query_states_by_person($id) {
+  global $db;
+  $query = 'SELECT states.state_name, states.state_abbreviation
+            FROM states INNER JOIN visits ON states.id = visits.state_id
+            INNER JOIN people ON visits.person_id = people.id
+            WHERE people.id = :id';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':id', $id);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
+
 function query_visits_table(){
   global $db;
   $query = 'SELECT visits.id, CONCAT(people.first_name, " ", people.last_name) AS Name,
@@ -229,163 +229,33 @@ function query_visits_id_table($id) {
   return $array;
 }
 
-/*
-class api {
-  //Properties
-  private $db;
-
-  //Constructor - establishes connection to database
-  function __constructor($i) {
-    $db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
-
-    // determine HTTP method and URI
-    $method = $_SERVER['REQUEST_METHOD'];
-    $uri = $i;//$_SERVER['REQUEST_URI'];
-
-    // explode URL into Array and remove initial blank element
-    $paths = explode('/', $this->paths($uri));
-    $table = array_shift($paths);
-    $id = array_shift($paths);
-
-    //check if id is Empty
-    if (empty($id)) {
-      //Call method to retrieve data about given table
-      echo $this->get_table_data($table);
-    } else {
-      //Call method to retrieve data about given table and id
-      $this->get_table_plus_id_data($table, $id);
-    }
-  }
-
-  //Methods
-  public function paths($url) {
-    $paths = parse_url($url);
-    return $paths['path'];
-  }
-
-  public function get_table_data($table) {
-    global $db;
-    $query = 'SELECT * FROM :table';
-    $stm = $db->prepare($query);
-    $stm->bindValue(':table', $table);
-    $stm->execute();
-    $data = $stm->fetchAll();
-    $stm->closeCursor();
-    for($i = 0; $i < count($data); $i++) {
-      foreach ($data[$i] as $key=> $info) {
-        if (is_int($key)){
-          unset($data[$i][$key]);
-        }
-      }
-    }
-    $data_json = json_encode($data);
-    return $data_json;
-  }
-}*/
-/*
-$db;
-connect_database();
-echo get_json_of_people() . "\n\n";
-echo get_json_of_states() . "\n\n";
-echo get_json_of_visits() . "\n\n";
-
-//Functions
-function get_json_of_people(){
-  $people = get_people();
-  for($i = 0; $i < count($people); $i++) {
-    foreach ($people[$i] as $key=> $person) {
-      if (is_int($key)){
-        unset($people[$i][$key]);
-      }
-    }
-  }
-  $people_json = json_encode($people);
-  return $people_json;
-}
-
-function get_json_of_states(){
-  $states = get_states();
-  for($i = 0; $i < count($states); $i++) {
-    foreach ($states[$i] as $key=> $state) {
-      if (is_int($key)){
-        unset($states[$i][$key]);
-      }
-    }
-  }
-  $states_json = json_encode($states);
-  return $states_json;
-}
-
-function get_json_of_visits() {
-    $visits = get_visits();
-    for($i = 0; $i < count($visits); $i++) {
-      foreach ($visits[$i] as $key=> $visit) {
-        if (is_int($key)){
-          unset($visits[$i][$key]);
-        }
-      }
-    }
-    $visits_json = json_encode($visits);
-    return $visits_json;
-}
-
-function connect_database () {
-	global $db;
-	$db = new PDO('mysql:host=localhost;dbname=Intern_Project1', 'root', 'root');
-  }
-
-function get_people() {
-    try {
-      global $db;
-      $query = 'SELECT * FROM people';
-      $statement = $db->prepare($query);
-      $statement->execute();
-      $people = $statement->fetchAll();
-      $statement->closeCursor();
-      return $people;
-    } catch(\Exception $e) {
-      echo $e->getMessage();
-    }
-  }
-
-function get_states() {
-    global $db;
-    $query = 'SELECT * FROM states';
-    $stm = $db->prepare($query);
-    $stm->execute();
-    $states = $stm->fetchAll();
-    $stm->closeCursor();
-    return $states;
-  }
-
-function get_visits() {
+function query_visits_by_person($person_id) {
   global $db;
-  $query = 'SELECT visits.id, CONCAT(people.first_name, " ", people.last_name) AS Name,
-            states.state_name
+  $query = 'SELECT visits.id, states.state_name
             FROM visits INNER JOIN people
             ON visits.person_id = people.id INNER JOIN states
-            ON visits.state_id = states.id';
+            ON visits.state_id = states.id
+            WHERE visits.person_id = :id';
   $stm = $db->prepare($query);
+  $stm->bindValue(':id', $person_id);
   $stm->execute();
   $array = $stm->fetchAll();
   $stm->closeCursor();
   return $array;
 }
 
-function get_persons_visits($person_id) {
-    global $db;
-    $query = 'SELECT visits.id, people.id, states.state_name
-              FROM visits INNER JOIN people
-              ON visits.person_id = people.id INNER JOIN states
-              ON visits.state_id = states.id
-              WHERE people.id = :person';
-    $stm = $db->prepare($query);
-    $stm->bindValue(':person', $person_id);
-    $stm->execute();
-    $visits = $stm->fetchAll();
-    $stm->closeCursor();
-    return $visits;
-  }*/
-  //$i = '/people';
-  //$api = new api($i);
+function query_visits_by_state($id) {
+  global $db;
+  $query = 'SELECT people.id, CONCAT(people.first_name, " ", people.last_name)
+            AS Name, people.favorite_food FROM states
+            INNER JOIN visits ON states.id = visits.state_id
+            INNER JOIN people ON visits.person_id = people.id
+            WHERE states.id = :id';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':id', $id);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
 ?>
