@@ -42,6 +42,29 @@ switch($sections) {
     echo 'Error: ' . $e->getMessage();
   }
   break;
+
+  // ends with /api/TABLE_NAME/id_num/Col_name
+  case 2:
+  $prev_key = '';
+  $prev_id = '';
+  //$json_array = [];
+
+  /*
+  print_r($apiVars);
+  $json = json_encode($apiVars);
+  print_r($json);
+  $json = json_decode($json);
+  print_r($json);
+  foreach ($json as $obj){
+    echo $obj->name;
+  }*/
+  foreach ($apiVars as $key => $id) {
+    $array = get_1_tier_table($key, $id, $prev_key, $pre_id);
+    $req_info['$key'] = $array;
+    $prev_key = $key;
+    $prev_id = $id;
+  }
+  break;
 }
 
 header('application/json');
@@ -50,83 +73,160 @@ header('application/json');
 //print_r($apiVars);
 print_r($req_info);
 //echo(json_encode($apiVars));
-echo(json_encode($req_info));
+//echo(json_encode($req_info));
 
 
 die();
 
 //Functions
-function get_1_tier_table($table, $id = '') {
-  global $db;
+function get_1_tier_table($table, $id = '', $outer_table = '', $outer_id = '') {
   if (isset($id) && strcasecmp($table, PEOPLE) == 0) {
     if(!is_numeric($id)) {
       echo 'Incorrect ID value. Please enter a number or leave blank.';
       die();
     }
-    $query = 'SELECT * FROM people
-               WHERE id = :id';
-    $stm = $db->prepare($query);
-    $stm->bindValue(':id', $id);
-    $stm->execute();
-    $array = $stm->fetchAll();
-    $stm->closeCursor();
+    $array = query_people_id_table($id);
+    $array = remove_digit_elements($array);
     return $array;
   } else if (!isset($id) && strcasecmp($table, PEOPLE) == 0) {
-    $query = 'SELECT * FROM people';
-    $stm = $db->prepare($query);
-    $stm->execute();
-    $array = $stm->fetchAll();
-    $stm->closeCursor();
+    $array = query_people_table();
+    $array = remove_digit_elements($array);
     return $array;
   } else if (isset($id) && strcasecmp($table, STATES) == 0) {
     if(!is_numeric($id)) {
       echo 'Incorrect ID value. Please enter a number or leave blank.';
       die();
     }
-    $query = 'SELECT * FROM states
-               WHERE id = :id';
-    $stm = $db->prepare($query);
-    $stm->bindValue(':id', $id);
-    $stm->execute();
-    $array = $stm->fetchAll();
-    $stm->closeCursor();
+    $array = query_states_id_table($id);
+    $array = remove_digit_elements($array);
     return $array;
   } else if (!isset($id) && strcasecmp($table, STATES) == 0) {
-    $query = 'SELECT * FROM states';
-    $stm = $db->prepare($query);
-    $stm->execute();
-    $array = $stm->fetchAll();
-    $stm->closeCursor();
+    $array = query_states_table();
+    $array = remove_digit_elements($array);
     return $array;
   } else if (isset($id) && strcasecmp($table, VISITS) == 0) {
     if(!is_numeric($id)) {
       echo 'Incorrect ID value. Please enter a number or leave blank.';
       die();
     }
-    $query = 'SELECT visits.id, CONCAT(people.first_name, " ", people.last_name) AS Name,
-              states.state_name
-              FROM visits INNER JOIN people
-              ON visits.person_id = people.id INNER JOIN states
-              ON visits.state_id = states.id
-              WHERE visits.id = :id';
-    $stm = $db->prepare($query);
-    $stm->bindValue(':id', $id);
-    $stm->execute();
-    $array = $stm->fetchAll();
-    $stm->closeCursor();
+    $array = query_visits_id_table($id);
+    $array = remove_digit_elements($array);
     return $array;
   } else if (!isset($id) && strcasecmp($table, VISITS) == 0) {
-    $query = 'SELECT visits.id, CONCAT(people.first_name, " ", people.last_name) AS Name,
-              states.state_name
-              FROM visits INNER JOIN people
-              ON visits.person_id = people.id INNER JOIN states
-              ON visits.state_id = states.id';
-    $stm = $db->prepare($query);
-    $stm->execute();
-    $array = $stm->fetchAll();
-    $stm->closeCursor();
+    $array = query_visits_table();
+    $array = remove_digit_elements($array);
     return $array;
   }
+}
+
+function get_2_tier_table($table1, $id1, $table2) {
+  if (isset($id1) && strcasecmp($table1, PEOPLE) == 0 &&
+      strcasecmp($table2, VISITS) == 0) {
+    if(!is_numeric($id1)) {
+      echo 'Incorrect ID value. Please enter a number or leave blank.';
+      die();
+    }
+    $people_array = query_people_id_table($id);
+    $people_array = remove_digit_elements($people_array);
+    $people_array_en = encode_in_json($people_array);
+
+    $visits_array = query_visits_table();
+    $visits_array = remove_digit_elements($visits_array);
+    $visits_array_en = encoce_in_json($visits_array);
+
+    $people_array_en['visits'] = $visits_array_en;
+    return $people_array_en;
+  }
+}
+
+function remove_digit_elements($arrays) {
+  for($i = 0; $i < count($arrays); $i++) {
+    foreach ($arrays[$i] as $key=> $info) {
+      if (is_int($key)){
+        unset($arrays[$i][$key]);
+      }
+    }
+  }
+  return $arrays;
+}
+
+function encode_in_json($array) {
+  $array_en = json_encode($array);
+  return $array_en;
+}
+
+function query_people_table(){
+  global $db;
+  $query = 'SELECT * FROM people';
+  $stm = $db->prepare($query);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
+
+function query_people_id_table($id) {
+  global $db;
+  $query = 'SELECT * FROM people
+             WHERE id = :id';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':id', $id);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
+
+function query_states_table(){
+  global $db;
+  $query = 'SELECT * FROM states';
+  $stm = $db->prepare($query);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
+
+function query_states_id_table($id) {
+  global $db;
+  $query = 'SELECT * FROM states
+             WHERE id = :id';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':id', $id);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
+
+function query_visits_table(){
+  global $db;
+  $query = 'SELECT visits.id, CONCAT(people.first_name, " ", people.last_name) AS Name,
+            states.state_name
+            FROM visits INNER JOIN people
+            ON visits.person_id = people.id INNER JOIN states
+            ON visits.state_id = states.id';
+  $stm = $db->prepare($query);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
+}
+
+function query_visits_id_table($id) {
+  global $db;
+  $query = 'SELECT visits.id, CONCAT(people.first_name, " ", people.last_name) AS Name,
+            states.state_name
+            FROM visits INNER JOIN people
+            ON visits.person_id = people.id INNER JOIN states
+            ON visits.state_id = states.id
+            WHERE visits.id = :id';
+  $stm = $db->prepare($query);
+  $stm->bindValue(':id', $id);
+  $stm->execute();
+  $array = $stm->fetchAll();
+  $stm->closeCursor();
+  return $array;
 }
 
 /*
