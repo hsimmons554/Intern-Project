@@ -48,7 +48,7 @@
 <script>
   function loadPeople(str) {
     $.ajax({
-      url: 'api/people',
+      url: '10.10.10.10/api/people',
       type: 'GET',
       data: 'q=' + str,
       dataType: 'json',
