@@ -57,7 +57,7 @@ switch($sections) {
 }
 
 header('application/json');
-print_r($req_info);
+echo($req_info);
 die();
 
 //Functions

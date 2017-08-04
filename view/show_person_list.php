@@ -11,24 +11,7 @@
 <form ".">
   <input type="hidden" name="action" value="show_person_stats" />
 <div id="person_list">
-  <select id="person_id" name="person_id" pagecontainerload="loadPeople(this.value)" /><!--
-    <script type="text/javascript" charset="utf-8">
-      $.getJSON("api/people", function(json){
-        $('#select').empty();
-        $('#select').append($('<option>').text("Select"));
-        $.each(json, function(i, obj){
-          $('#select').append($('<option>').text(obj.first_name).attr('value', obj.id));
-        });
-      });
-    </script> -->
-    <!-- <?php /*
-    <?php foreach($persons as $person) : ?>
-    <option value="<?php echo $person['id']; ?>"
-      <?php if($person['id'] == $person_stats['id']) : ?>
-        selected <?php endif; ?>>
-      <?php echo $person[first_name] . ' ' . $person[last_name]; ?>
-    </option>
-  <?php endforeach; ?> */ ?>-->
+  <select id="person_id"/>
   </select>
 </div>
   <input type="submit" value="Submit Person" />
@@ -45,6 +28,16 @@
     <?php {echo '<label>States: None</label>'; break;} ?>
   <?php endif; ?>
 <?php endif; ?>
+
+<!-- Testing scripts -->
+<button id="btn">add option</button>
+<button id="btn2">remove options</button>
+<button id="btn3">log obj data</button>
+<button id="btn4">add to list</button>
+<button id="btn5"> select from list</button>
+<p id="testBlock"></p>
+
+<p id="test">hi: </p>
 <script>
   function loadPeople(str) {
     $.ajax({
@@ -59,20 +52,38 @@
       }
     });
   };
-</script>
-<!--
-<script>
-  function loadPeople() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        <! Code to load list of people >
-        document.getElementById("person_list").innerHTML =
-        this.responseText;
+
+<!-- working script that adds hard coded options to select list -->
+  $(Document).ready(function(){
+    $("#btn").click(function() {
+      $("select").append("<option>hi</option>");
+    });
+
+    $("#btn2").click(function() {
+      $("option").remove();
+    });
+
+    $("#btn3").click(function() {
+      $.get("api.php/states", function(rawdata, status){
+        for (i=0; i<JSON.parse(rawdata).length; i++){
+        //console.log("Data: " + JSON.parse(rawdata)[i].id + "\nStatus: " + status);
+        $("select").append("<option value=\""+ JSON.parse(rawdata)[i].id +
+                           "\">" + JSON.parse(rawdata)[i].state_name + "</option>");
       }
-    };
-    xhttp.open("GET", "api/people", true);
-    xhttp.send();
-  }
-</script> -->
+      });
+    });
+
+    $("#btn4").click(function() {
+      $("select").append("<option>" + function() {
+        $.get("api.php/states");
+      } +"</option>");
+    });
+
+    $("#btn5").click(function(){
+      alert("option value:" + /*if($("option").)*/$("option").filter(":selected").text() +
+    " id:" + $("option").filter(":selected").attr("value"));
+    });
+});
+</script>
+
 <?php include('footer.php'); ?>
