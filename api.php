@@ -46,11 +46,16 @@ switch($sections) {
 
   // ends with /api/TABLE_NAME/id_num/Col_name
   case 2:
+  $isFirst = true;
   foreach ($apiVars as $key => $id) {
-    $array = get_json_table($prev_key, $prev_id, $key, $id);
-    $req_info[$key] = $array;
+    if(!$isFirst){
+      $array = get_json_table($prev_key, $prev_id, $key, $id);
+      $req_info = $array;
+    }
+
     $prev_key = $key;
     $prev_id = $id;
+    $isFirst = false;
   }
   $req_info = encode_in_json($req_info);
   break;
