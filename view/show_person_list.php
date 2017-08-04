@@ -1,58 +1,50 @@
 <?php include('header.php'); ?>
 <h1>Select Person</h1>
-<button id="add_person">Add Person</button>
-<button id="add_visit">Add Visit</button>
-<div id="dialog"></div>
-<!--
-<form ".">
-  <input type="hidden" name="action" value="show_add_person" />
-  <input type="submit" value="Add Person" />
-</form>
-<form ".">
-  <input type="hidden" name="action" value="show_add_visit" />
-  <input type="submit" value="Add Visit" />
-</form>
-<form ".">
-  <input type="hidden" name="action" value="show_person_stats" />
+<button id="show_add_person_btn">Add Person</button>
+<div id="add_person_form">
+  <form>
+    fname<input id="add_p_fname" type="text" name="first_name"/><br>
+    lname<input id="add_p_lname" type="text" name="last_name"/><br>
+    food<input id="add_p_food" type="text" name="food"/><br>
+  </form>
+  <button id="add_person">add person to list</button><br>
+  <button id="cancel_add_prs_btn">Cancel</button>
+</div>
 
-<div id="person_list"> -->
+<button id="show_add_visit_form_btn">Add Visit</button>
+<div id="add_visit_form">
+  <form>
+      <label>Person:</label><select></select><br>
+      <label>State:</label><select></select><br>
+      <button id="add_visit">Add Visit</button>
+      <button id="cancel_add_vst_btn">Cancel</button>
+  </form>
+</div>
+
 <select id="person_list"/>
 </select>
-  <!--
-</div> -->
-<!--
-  <input type="submit" value="Submit Person" />
-</form> -->
 <button id="sub_prs_btn">Submit Person</button><br>
 <label>Name: </label><label id="person_name"></label><br>
 <label>Food: </label><label id="person_food"></label><br>
 <label>States: </label><label><ul id="person_states"></ul></label><br>
-
-<!--
-<?php// if($flag) : ?>
-  <label>Name: <?php// echo $person_stats['first_name'] . ' ' . $person_stats['last_name']; ?></label><br>
-  <label>Food: <?php// echo $person_stats['favorite_food']; ?></label><br>
-  <?php// if(!empty($visits)) : ?>
-    <label>States:</label><br>
-    <?php// foreach ($visits as $visit) : ?>
-      <label>&nbsp;</label><label> <?php// echo $visit['state_name']; ?></label><br>
-    <?php// endforeach; ?>
-  <?php// else : ?>
-    <?php// {echo '<label>States: None</label>'; break;} ?>
-  <?php// endif; ?>
-<?php// endif; ?> /* ?>
--->
 
 <!-- Testing scripts -->
 <!--
 <button id="btn">add option</button>
 <button id="btn2">jlj</button>
 <button id="btn3">log obj data</button>
-<button id="btn4">add to list</button>
-<button id="btn5"> select from list</button> -->
+<button id="btn4">add to list</button> -->
+
+
+
 <script>
 <!-- working script that adds hard coded options to select list -->
   $(Document).ready(function(){
+
+    // hide popup forms
+    $("#add_person_form").hide();
+    $("#add_visit_form").hide();
+
     // Function to auto load selection list
     $.get("api.php/people", function(data, status){
       var obj = JSON.parse(data);
@@ -61,6 +53,24 @@
                         "\">" + obj[i].first_name +
                         " " + obj[i].last_name + "</option");
       }
+    });
+
+    // show the form for the add person
+    $("#show_add_person_btn").click(function(){
+      $("#add_person_form").show();
+      $("#show_add_person_btn").hide();
+    });
+
+    // show the form for the add visit
+    $("#show_add_visit_form_btn").click(function(){
+      $("#add_visit_form").show();
+      $("#show_add_visit_form_btn").hide();
+    });
+
+    // Hide the form for the add person
+    $("#cancel_add_prs_btn").click(function(){
+      $("#add_person_form").hide();
+      $("#show_add_person_btn").show();
     });
 
     //Function to submit person choice to database
@@ -97,8 +107,31 @@
       });
     });
 
-    $("#add_person").onclick(function(){
-      document.getElementById('abc').style.display = "block";
+    //Add person to database
+    $("#add_person").click(function(){
+      var fname = $("#add_p_fname").val();
+      var lname = $("#add_p_lname").val();
+      var food = $("#add_p_food").val();
+      alert(fname + lname + food);
+      $.post("testingUploading.php",
+      {
+        first_name: fname,
+        last_name: lname,
+        favorite_food: food
+      },
+      function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+        var obj = JSON.parse(data);
+        $("#person_list").append("<option value=\"" +
+          obj.id + "\">" + obj.name + "</option>");
+        $("#add_person_form").hide();
+        $("#show_add_person_btn").show();
+      });
+    });
+
+    // Add a person's visit "temp as button"
+    $("#add_visit").click(function(){
+      var name = $("#add_s_name")
     });
 
 
