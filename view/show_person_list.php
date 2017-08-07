@@ -1,46 +1,69 @@
 <?php include('header.php'); ?>
 <h1>Select Person</h1>
-<button id="show_add_person_btn">Add Person</button>
-<div id="add_person_form">
-  <form>
-    fname<input id="add_p_fname" type="text" name="first_name"/><br>
-    lname<input id="add_p_lname" type="text" name="last_name"/><br>
-    food<input id="add_p_food" type="text" name="food"/><br>
-  </form>
-  <button id="add_person">add person to list</button><br>
-  <button id="cancel_add_prs_btn">Cancel</button>
+
+<!-- Trigger the modals with buttons -->
+<button id="add_person" type="button" class="btn btn-primary" data-toggle="modal" data-target="#personModal">Add Person</button>
+<button id="add_visit" type="button" class="btn btn-primary" data-toggle="modal" data-target="#visitModal">Add Visit</button><br>
+
+<!-- Modal to Add People -->
+<div class="modal fade" id="personModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add an User Account</h4>
+      </div>
+      <div class="modal-body">
+        <p>Type in the Name and favorite food of the New User:</p>
+        <label>First Name:</label><input id="add_prs_fname" type="text"><br>
+        <label>Last Name:</label><input id="add_prs_lname" type="text"><br>
+        <label>Favorite Food:</label><input id="add_prs_food" type="text">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="submit_person" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<button id="show_add_visit_form_btn">Add Visit</button>
-<div id="add_visit_form">
-  <form>
-      <label>Person:</label><select></select><br>
-      <label>State:</label><select></select><br>
-      <button id="add_visit">Add Visit</button>
-      <button id="cancel_add_vst_btn">Cancel</button>
-  </form>
+<!-- Modal to Add Visits -->
+<div class="modal fade" id="visitModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add a Visit to User's Account</h4>
+      </div>
+      <div class="modal-body">
+        <p>Select the a User Profile and the State that the User visited recently:</p>
+        <label>Name:</label><select id="add_vis_prs_list"></select><br>
+        <label>State:</label><select id="add_vis_state_list"></select><br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="submit_visit" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <select id="person_list"/>
 </select>
-<button id="sub_prs_btn">Submit Person</button><br>
+<button id="sub_prs_btn" type="button" class="btn btn-primary">Submit Person</button><br>
 <label>Name: </label><label id="person_name"></label><br>
 <label>Food: </label><label id="person_food"></label><br>
-<label>States: </label><label><ul id="person_states"></ul></label><br>
-
-<!-- Testing scripts -->
-<!--
-<button id="btn">add option</button>
-<button id="btn2">jlj</button>
-<button id="btn3">log obj data</button>
-<button id="btn4">add to list</button> -->
-
-
+<label style="display:block;">States: </label><label><ul id="person_states"></ul></label><br>
+<?php include('footer.php'); ?>
 
 <script>
 <!-- working script that adds hard coded options to select list -->
   $(Document).ready(function(){
-
+    $("#buttonTest").click(function(){
+      $("#myModal").modal();
+    })
     // hide popup forms
     $("#add_person_form").hide();
     $("#add_visit_form").hide();
@@ -55,28 +78,70 @@
       }
     });
 
-    // show the form for the add person
-    $("#show_add_person_btn").click(function(){
-      $("#add_person_form").show();
-      $("#show_add_person_btn").hide();
+    // Functions to add people to database
+    $("#submit_person").click(function(){
+      var fname = $("#add_prs_fname").val();
+      var lname = $("#add_prs_lname").val();
+      var food = $("#add_prs_food").val();
+      if(!fname || fname == "" || $.isNumeric(parseInt(fname)) ||
+         !lname || lname == "" || $.isNumeric(parseInt(lname))) {
+        alert("Please enter a name and try again")
+        return;
+      }
+      if(!food || food == "" || $.isNumeric(parseInt(food))) {
+        alert("Please enter a food type and try again")
+        return;
+      }
+        $.post("testingUploading.php",
+        {
+          table: "people",
+          first_name: fname,
+          last_name: lname,
+          favorite_food: food
+        },
+        function(data, status){
+          var obj = JSON.parse(data);
+          $("#person_list").append("<option value=\"" +
+            obj.id + "\">" + obj.name + "</option>");
+        });
     });
 
-    // show the form for the add visit
-    $("#show_add_visit_form_btn").click(function(){
-      $("#add_visit_form").show();
-      $("#show_add_visit_form_btn").hide();
+    // Add Visits functions
+    $("#add_visit").click(function(){
+      //Clear out the select lists for the next button click
+      $("#add_vis_prs_list").empty();
+      $("#add_vis_state_list").empty();
+      $.get("api.php/people", function(data, status){
+        var obj = JSON.parse(data);
+        for (i=0; i<obj.length; i++){
+          $("#add_vis_prs_list").append("<option value=\"" + obj[i].id +
+                          "\">" + obj[i].first_name +
+                          " " + obj[i].last_name + "</option");
+        }
+      });
+      $.get("api.php/states", function(data, status){
+        var obj = JSON.parse(data);
+        for (i=0; i<obj.length; i++){
+          $("#add_vis_state_list").append("<option value=\"" + obj[i].id +
+                          "\">" + obj[i].state_name + "</option");
+        }
+      });
     });
 
-    // Hide the form for the add person
-    $("#cancel_add_prs_btn").click(function(){
-      $("#add_person_form").hide();
-      $("#show_add_person_btn").show();
-    });
-
-    //Function to submit person choice to database
-    $("#sub_prs_btn_test").click(function(){
-      alert("Person Name: " + $("#person_list option:selected").text() +
-                  "\nPerson Id:" + $("#person_list").val());
+    $("#submit_visit").click(function(){
+      var prs_id = $("#add_vis_prs_list").val();
+      var ste_id = $("#add_vis_state_list").val();
+      $.post("testingUploading.php",
+      {
+        table: "visits",
+        prs_id: prs_id,
+        ste_id: ste_id,
+      },
+      function(data, status){
+        var obj = JSON.parse(data);
+        $("#person_list").append("<option value=\"" +
+          obj.id + "\">" + obj.name + "</option>");
+      });
     });
 
     //Function to retrieve person data to server
@@ -89,8 +154,6 @@
         var obj = JSON.parse(data);
         var name = obj[0].first_name + " " + obj[0].last_name;
         var food = obj[0].favorite_food;
-        //var url = "api.php/people/" + $("#person_list").val();
-        //alert("Name: "+name+"\nFood: "+food+"\nstatus: " + status);
         $("#person_name").text(name);
         $("#person_food").text(food);
 
@@ -106,76 +169,6 @@
         });
       });
     });
-
-    //Add person to database
-    $("#add_person").click(function(){
-      var fname = $("#add_p_fname").val();
-      var lname = $("#add_p_lname").val();
-      var food = $("#add_p_food").val();
-      alert(fname + lname + food);
-      $.post("testingUploading.php",
-      {
-        first_name: fname,
-        last_name: lname,
-        favorite_food: food
-      },
-      function(data, status){
-        alert("Data: " + data + "\nStatus: " + status);
-        var obj = JSON.parse(data);
-        $("#person_list").append("<option value=\"" +
-          obj.id + "\">" + obj.name + "</option>");
-        $("#add_person_form").hide();
-        $("#show_add_person_btn").show();
-      });
-    });
-
-    // Add a person's visit "temp as button"
-    $("#add_visit").click(function(){
-      var name = $("#add_s_name")
-    });
-
-
-    //$("#add_person").click(function(){
-      //$("#dialog").css("display", "block");
-      //  modal: true;
-        //autoOpen: false;
-
-        //onClose: function(){
-          //alert("hi");
-        //}
-    //  $("#dialog").dialog("open");
-      //$.post("")
-    //});
-/*
-    $("#btn").click(function() {
-      $("select").append("<option>hi</option>");
-    });
-*/
-    /*$("#btn2").click(function() {
-      $("option").remove();
-    });*/
-/*
-    $("#btn3").click(function() {
-      $.get("api.php/states", function(rawdata, status){
-        for (i=0; i<JSON.parse(rawdata).length; i++){
-        //console.log("Data: " + JSON.parse(rawdata)[i].id + "\nStatus: " + status);
-        $("select").append("<option value=\""+ JSON.parse(rawdata)[i].id +
-                           "\">" + JSON.parse(rawdata)[i].state_name + "</option>");
-      }
-      });
-    });
-*//*
-    $("#btn4").click(function() {
-      $("select").append("<option>" + function() {
-        $.get("api.php/states");
-      } +"</option>");
-    });
-*//*
-    $("#btn5").click(function(){
-      alert("option value:" + /*if($("option").)*//*$("option").filter(":selected").text() +
-    " id:" + $("option").filter(":selected").attr("value"));
-    });
-*/
 });
 </script>
 
