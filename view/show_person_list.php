@@ -1,10 +1,4 @@
 <?php include('header.php'); ?>
-<h1>Select Person</h1>
-
-<!-- Trigger the modals with buttons -->
-<button id="add_person" type="button" class="btn btn-primary" data-toggle="modal" data-target="#personModal">Add Person</button>
-<button id="add_visit" type="button" class="btn btn-primary" data-toggle="modal" data-target="#visitModal">Add Visit</button><br>
-
 <!-- Modal to Add People -->
 <div class="modal fade" id="personModal" role="dialog">
   <div class="modal-dialog">
@@ -15,11 +9,19 @@
         <h4 class="modal-title">Add an User Account</h4>
       </div>
       <div class="modal-body">
-        <p>Type in the Name and favorite food of the New User:</p>
-        <label>First Name:</label><input id="add_prs_fname" type="text"><br>
-        <label>Last Name:</label><input id="add_prs_lname" type="text"><br>
-        <label>Favorite Food:</label><input id="add_prs_food" type="text">
+        <form>
+        <h4>Type in the Name and favorite food of the New User:</h4>
+        <div class="form-group">
+        <label>First Name:</label><input id="add_prs_fname" type="text" class="form-control"><br>
       </div>
+      <div class="form-group">
+        <label>Last Name:</label><input id="add_prs_lname" type="text" class="form-control"><br>
+      </div>
+      <div class="form-group">
+        <label>Favorite Food:</label><input id="add_prs_food" type="text" class="form-control">
+      </div>
+      </div>
+    </form>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button id="submit_person" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
@@ -39,8 +41,8 @@
       </div>
       <div class="modal-body">
         <p>Select the a User Profile and the State that the User visited recently:</p>
-        <label>Name:</label><select id="add_vis_prs_list"></select><br>
-        <label>State:</label><select id="add_vis_state_list"></select><br>
+        <label>Name:</label><select id="add_vis_prs_list" class="form-control"></select><br>
+        <label>State:</label><select id="add_vis_state_list" class="form-control"></select><br>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -49,13 +51,22 @@
     </div>
   </div>
 </div>
-
-<select id="person_list"/>
-</select>
-<button id="sub_prs_btn" type="button" class="btn btn-primary">Submit Person</button><br>
-<label>Name: </label><label id="person_name"></label><br>
-<label>Food: </label><label id="person_food"></label><br>
-<label style="display:block;">States: </label><label><ul id="person_states"></ul></label><br>
+<div class="container-fluid">
+<!-- Trigger the modals with buttons -->
+<button id="add_person" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#personModal">Add Person</button>
+<button id="add_visit" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#visitModal">Add Visit</button><br>
+</div>
+<div class="container">
+<h1>Select Person</h1>
+<button id="sub_prs_btn" type="button" class="btn btn-primary">Submit Person</button>
+<select id="person_list" class="form-control" style="width:auto; display:inline-block;"></select>
+</div>
+<div class="container" style="font-size:25px;">
+<label class="label label-success">Name: </label><label id="person_name" class="label label-default"></label><br>
+<label class="label label-success">Food: </label><label id="person_food" class="label label-default"></label><br>
+<label class="label label-success" style="float:left; margin-top:3px;">States: </label><label>
+    <ul id="person_states"></ul></label><br>
+</div>
 <?php include('footer.php'); ?>
 
 <script>
@@ -92,7 +103,7 @@
         alert("Please enter a food type and try again")
         return;
       }
-        $.post("testingUploading.php",
+        $.post("UploadToServer.php",
         {
           table: "people",
           first_name: fname,
@@ -131,7 +142,7 @@
     $("#submit_visit").click(function(){
       var prs_id = $("#add_vis_prs_list").val();
       var ste_id = $("#add_vis_state_list").val();
-      $.post("testingUploading.php",
+      $.post("UploadToServer.php",
       {
         table: "visits",
         prs_id: prs_id,
@@ -164,7 +175,7 @@
           var name;
           for (i=0;i<obj.length;i++){
             name = obj[i].state_name;
-            $("#person_states").append("<li>"+name+"</li>");
+            $("#person_states").append("<li><label class=\"label label-default\">"+name+"</label></li>");
           }
         });
       });
