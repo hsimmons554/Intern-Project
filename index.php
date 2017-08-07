@@ -1,63 +1,7 @@
 <!-- Project 2 -->
 <?php
+include('./view/show_person_list.php');
 
-//$db;
-//connect_database();
-
-$action = filter_input(INPUT_POST, 'action');
-if ($action == NULL) {
-  $action = filter_input(INPUT_GET, 'action');
-  if ($action == NULL) {
-    $action = 'show_people_list';
-  }
-}
-
-switch($action) {
-  case 'show_people_list':
-    //$persons = get_people();
-    include('./view/show_person_list.php');
-  break;
-  case 'show_person_stats':
-    //$persons = get_people();
-    //$person_id = filter_input(INPUT_GET, 'person_id', FILTER_VALIDATE_INT);
-    //$person_stats = get_indiv_stats($person_id);
-    //$visits = get_persons_visits($person_id);
-    //$flag = TRUE;
-    include('./view/show_person_list.php');
-    break;
-    case 'add_person':
-    //$fname = filter_input(INPUT_GET, 'first_name');
-    //$lname = filter_input(INPUT_GET, 'last_name');
-    //$food = filter_input(INPUT_GET, 'fav_food');
-  //  if($fname == NULL || $lname == NULL || $food == NULL) {
-  //    echo 'Incorrect values in the text boxes' . $fname;
-  //  } else {
-  //  $id_num = get_last_person_id();
-  //  add_person($id_num['MAX(id)'], $fname, $lname, $food);
-    header('Location: index.php');
-//  }
-    break;
-    case 'show_add_person':
-    include('./view/add_person_form.php');
-    break;
-    case 'show_add_visit':
-    //$persons = get_people();
-    //$states = get_states();
-    include('./view/add_visit_form.php');
-    break;
-    case 'add_visit':
-  // $person_id = filter_input(INPUT_GET, 'person_id', FILTER_VALIDATE_INT);
-  //  $state_id = filter_input(INPUT_GET, 'state_id', FILTER_VALIDATE_INT);
-
-  //  if ($person_id == NULL || $person_id == FALSE || $state_id == NULL || $state_id == FALSE) {
-  //    echo 'Something went wrong sending selections to index file.';
-  //  } else {
-  //    $id_num = get_last_visit_id();
-  //    add_visit($id_num['MAX(id)'], $person_id, $state_id);
-      header('Location: index.php');
-  //  }
-    break;
-}
 /*
 // Functions
 function add_person($id, $first_name, $last_name, $fav_food) {

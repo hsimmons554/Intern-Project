@@ -29,10 +29,6 @@ $prev_id = '';
 $sections = count($apiVars);
 
 switch($sections) {
-  // ends with /api
-  case 0:
-  break;
-  // ends with /api/TABLE_NAME[/id_num]
   case 1:
   try {
       foreach ($apiVars as $key => $id) {
