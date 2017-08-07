@@ -19,12 +19,12 @@ function get_last_visit_id() {
   return $id;
 }
 
-function insert_person($id, $fname, $lname, $food){
+function insert_person($fname, $lname, $food){
   global $db;
-  $query = 'INSERT INTO people VALUES
-          (:id, :fname, :lname, :food)';
+  $query = 'INSERT INTO people
+          (first_name, last_name, favorite_food) VALUES
+          (:fname, :lname, :food)';
   $stm = $db->prepare($query);
-  $stm->bindValue(':id', $id);
   $stm->bindValue(':fname', $fname);
   $stm->bindValue(':lname', $lname);
   $stm->bindValue(':food', $food);
@@ -32,12 +32,12 @@ function insert_person($id, $fname, $lname, $food){
   $stm->closeCursor();
 }
 
-function insert_visits($vis_id, $prs_id, $ste_id) {
+function insert_visits($prs_id, $ste_id) {
   global $db;
-  $query = 'INSERT INTO visits VALUES
-          (:vis_id, :prs_id, :ste_id)';
+  $query = 'INSERT INTO visits
+          (person_id, state_id) VALUES
+          (:prs_id, :ste_id)';
   $stm = $db->prepare($query);
-  $stm->bindValue(':vis_id', $vis_id);
   $stm->bindValue(':prs_id', $prs_id);
   $stm->bindValue(':ste_id', $ste_id);
   $stm->execute();

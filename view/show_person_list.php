@@ -76,8 +76,8 @@
       $("#myModal").modal();
     })
     // hide popup forms
-    $("#add_person_form").hide();
-    $("#add_visit_form").hide();
+    //$("#add_person_form").hide();
+    //$("#add_visit_form").hide();
 
     // Function to auto load selection list
     $.get("api.php/people", function(data, status){
@@ -112,8 +112,12 @@
         },
         function(data, status){
           var obj = JSON.parse(data);
+          if(!obj.id || !obj.name){
+            alert("Something went wrong.");
+          }else {
           $("#person_list").append("<option value=\"" +
             obj.id + "\">" + obj.name + "</option>");
+          }
         });
     });
 
@@ -150,8 +154,10 @@
       },
       function(data, status){
         var obj = JSON.parse(data);
-        $("#person_list").append("<option value=\"" +
-          obj.id + "\">" + obj.name + "</option>");
+        if(!obj.vis_id || !obj.prs_id || !obj.ste_id){
+          alert("Something went wrong.\nVisit ID: "+obj.vis_id +
+                "\Person ID: "+obj.prs_id + "\nState ID: " + obj.ste_id);
+        }
       });
     });
 
