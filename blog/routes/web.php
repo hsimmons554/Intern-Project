@@ -16,11 +16,23 @@ Route::get('/', function () {
     //$lname = 'Simmons';
     //return view('welcome')->with('name', 'Harold');
     //return view('welcome', compact('fname', 'lname'));
+    $tasks = DB::table('tasks')->get();
 
-    $tasks = [
+    //return $tasks;
+  /*  $tasks = [
       'Go to the store',
       'Finish my screencase',
       'Clean the house'
-    ];
+    ];*/
     return view('welcome', compact('tasks'));
+});
+
+Route::get('/tasks', function(){
+  $tasks = DB::table('tasks')->latest()->get();
+  return view('tasks.index', compact('tasks'));
+});
+
+Route::get('/tasks/{id}', function($id){
+    $tasks = DB::table('tasks')->find($id);
+    return view('tasks.show', compact('tasks'));
 });
