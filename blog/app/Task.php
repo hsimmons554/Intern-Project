@@ -13,6 +13,10 @@ class Task extends Model
       return static::where('completed', 0)->get();
     }
 
+    public static function test() {
+      echo "test";
+    }
+
     // Query Scope
     /*
     public function scopeIncomplete($query)
