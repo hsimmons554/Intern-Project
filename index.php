@@ -1,4 +1,4 @@
-<!-- Project 2 -->
+<!-- Project 3 -->
 <?php
 include('./view/show_person_list.php');
 
