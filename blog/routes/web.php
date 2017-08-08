@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Task;
 
 Route::get('/', function () {
     //$fname = 'Harold';
@@ -28,11 +29,16 @@ Route::get('/', function () {
 });
 
 Route::get('/tasks', function(){
-  $tasks = DB::table('tasks')->latest()->get();
+  //$tasks = DB::table('tasks')->latest()->get();
+  //$tasks = App\Task::all();
+  //$tasks = Task::all();
+  $tasks = Task::incomplete();
   return view('tasks.index', compact('tasks'));
 });
 
 Route::get('/tasks/{id}', function($id){
-    $tasks = DB::table('tasks')->find($id);
+    //$tasks = DB::table('tasks')->find($id);
+    //$tasks = App\Task::find($id);
+    $tasks = Task::find($id);
     return view('tasks.show', compact('tasks'));
 });
