@@ -1,47 +1,25 @@
 <?php
-
 /*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
+*************Routing with RESTFul**************
+GET     /posts            [select * from posts]
+GET     /posts/create     [display form for creating post]
+POST    /posts            [insert into posts (in database)]
+GET     /posts/{id}/edit  [display form to edit post]
+PATCH   /posts/{id}       [update request when above GET is submitted]
+GET     /posts/{id}       [view a specific post]
+DELETE  /posts/{id}       [delete request for a post]
+***********************************************
 */
+
+Route::get('/', 'PostsController@index');
+//Controller => PostsController
+//Eloquent Model => Post
+//migrate => create_posts_table
+
+Route::get('/posts/create', 'PostsController@create');
+Route::post('/posts', 'PostsController@store');
+//Route::get('/posts/{post}', 'PostsController@show');
 
 Route::get('/tasks', 'TasksController@index');
 
 Route::get('/tasks/{tasks}', 'TasksController@show');
-
-/*Route::get('/', function () {
-    //$fname = 'Harold';
-    //$lname = 'Simmons';
-    //return view('welcome')->with('name', 'Harold');
-    //return view('welcome', compact('fname', 'lname'));
-    $tasks = DB::table('tasks')->get();
-
-    //return $tasks;
-  /*  $tasks = [
-      'Go to the store',
-      'Finish my screencase',
-      'Clean the house'
-    ];*//*
-    return view('welcome', compact('tasks'));
-});*/
-/*
-Route::get('/tasks', function(){
-  //$tasks = DB::table('tasks')->latest()->get();
-  //$tasks = App\Task::all();
-  $tasks = Task::all();
-  //$tasks = Task::incomplete();
-  return view('tasks.index', compact('tasks'));
-}); */
-/*
-Route::get('/tasks/{id}', function($id){
-    //$tasks = DB::table('tasks')->find($id);
-    //$tasks = App\Task::find($id);
-    $tasks = Task::find($id);
-    return view('tasks.show', compact('tasks'));
-});*/
