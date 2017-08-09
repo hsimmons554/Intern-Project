@@ -9,12 +9,14 @@ class PostsController extends Controller
 {
     public function index()
     {
-      return view('posts.index');
+      $posts = Post::latest()->get();
+      return view('posts.index', compact('posts'));
     }
 
-    public function show()
+    public function show(Post $post)
     {
-      return view('posts.show');
+
+      return view('posts.show', compact('post'));
     }
 
     public function store()
@@ -27,6 +29,13 @@ class PostsController extends Controller
 
       // Save it to the database
       //$post->save();
+
+      // Built in validation in Laravel
+      $this->validate(request(), [
+          'title' => 'required',
+          //'title' => 'required|min:10|' etc etc
+          'body' => 'required'
+      ]);
 
       Post::create([
         'title' => request('title'),
