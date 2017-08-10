@@ -2,7 +2,9 @@
 
 namespace App;
 
-class Visit extends Model
+use Illuminate\Database\Eloquent\Relations\Pivot;
+
+class Visit extends Pivot
 {
-  
+    //
 }

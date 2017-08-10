@@ -39,6 +39,9 @@ $(Document).ready(function(){
         }else {
         $("#person_list").append("<option value=\"" +
           obj.id + "\">" + obj.first_name + " " + obj.last_name + "</option>");
+          $("#add_prs_fname").val("");
+          $("#add_prs_lname").val("");
+          $("#add_prs_food").val("");
         }
       });
   });
