@@ -11,6 +11,16 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'PersonController@index');
+Route::post('/people', 'PersonController@store');
+Route::post('/visit', 'VisitController@store');
+
+//Route::get('/api/people', 'PersonController@show');
+//Route::get('/api.php?{args}', 'PersonController@show');
+
+
+/******Temp Routes Until API works*******/
+Route::get('/app/people', 'PersonController@show');
+Route::get('/app/people/{id}', 'PersonController@showOnePers');
+Route::get('/app/people/{id}/states', 'PersonController@states');
+Route::get('/app/states', 'StateController@show');
