@@ -28,7 +28,7 @@ class PersonController extends Controller
     // Handles the GET /people/{id}/states request
     public function states(Person $id)
     {
-      $person = Person::find($id->id)->belongsToMany('App\State', 'visits')->get();
+      $person = Person::find($id->id)->belongsToMany('App\State', 'visits')->orderBy('state_name')->get();
       return $person;
     }
 
