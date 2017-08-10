@@ -16,13 +16,13 @@
           {{ csrf_field() }}
         <h4>Type in the Name and favorite food of the New User:</h4>
         <div class="form-group">
-        <label>First Name:</label><input id="add_prs_fname" type="text" class="form-control"><br>
+        <label class="label label-default">First Name:</label><input id="add_prs_fname" type="text" class="form-control"><br>
       </div>
       <div class="form-group">
-        <label>Last Name:</label><input id="add_prs_lname" type="text" class="form-control"><br>
+        <label class="label label-default">Last Name:</label><input id="add_prs_lname" type="text" class="form-control"><br>
       </div>
       <div class="form-group">
-        <label>Favorite Food:</label><input id="add_prs_food" type="text" class="form-control">
+        <label class="label label-default">Favorite Food:</label><input id="add_prs_food" type="text" class="form-control">
       </div>
       </div>
     </form>
@@ -45,8 +45,8 @@
       </div>
       <div class="modal-body">
         <p>Select the a User Profile and the State that the User visited recently:</p>
-        <label>Name:</label><select id="add_vis_prs_list" class="form-control"></select><br>
-        <label>State:</label><select id="add_vis_state_list" class="form-control"></select><br>
+        <label class="label label-default">Name:</label><select id="add_vis_prs_list" class="form-control"></select><br>
+        <label class="label label-default">State:</label><select id="add_vis_state_list" class="form-control"></select><br>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -58,7 +58,7 @@
 <div class="container-fluid">
 <!-- Trigger the modals with buttons -->
 <button id="add_person" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#personModal">Add Person</button>
-<button id="add_visit" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#visitModal">Add Visit</button><br>
+<button id="add_visit" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#visitModal">Add Visit</button><hr>
 </div>
 <div class="container">
 <h1>Select Person</h1>
@@ -66,10 +66,10 @@
 <select id="person_list" class="form-control"></select>
 </div>
 <div id="data_labels" class="container">
-<label class="label label-success">Name: </label><label id="person_name" class="label label-default"></label><br>
-<label class="label label-success">Food: </label><label id="person_food" class="label label-default"></label><br>
-<label id="states_label" class="label label-success">States: </label><label>
-    <ul id="person_states"></ul></label><br>
+<label class="label label-success headers">Name: </label><label id="person_name" class="label label-default results"></label><br>
+<label class="label label-success headers">Food: </label><label id="person_food" class="label label-default results"></label><br>
+<label id="states_label" class="label label-success">States: </label><label class="results">
+    <ul id="person_states"></ul></label><br class="footer">
 </div>
 
 @endsection
