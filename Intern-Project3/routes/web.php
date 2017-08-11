@@ -11,16 +11,16 @@
 |
 */
 
-Route::get('/', 'PersonController@index');
-Route::post('/people', 'PersonController@store');
-Route::post('/visit', 'VisitController@store');
+Route::get('/', 'AppController@index');
+Route::post('/people', 'AppController@storePeople');
+Route::post('/visit', 'AppController@storeVisits');
 
 //Route::get('/api/people', 'PersonController@show');
 //Route::get('/api.php?{args}', 'PersonController@show');
 
 
 /******Temp Routes Until API works*******/
-Route::get('/app/people', 'PersonController@show');
-Route::get('/app/people/{id}', 'PersonController@showOnePers');
-Route::get('/app/people/{id}/states', 'PersonController@states');
-Route::get('/app/states', 'StateController@show');
+Route::get('/app/people', 'AppController@showPeople');
+Route::get('/app/people/{id}', 'AppController@showOnePers');
+Route::get('/app/people/{id}/states', 'AppController@statesByPerson');
+Route::get('/app/states', 'AppController@showStates');

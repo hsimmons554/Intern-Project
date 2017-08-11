@@ -8,6 +8,6 @@ class Person extends Model
     // the visits table as the derived table
     public function states()
     {
-      return $this->belongsToMany(State::class, 'visits')->using(Visit::class);
+      return $this->belongsToMany(State::class, 'visits')->using(Visit::class)->orderBy('state_name');
     }
 }
