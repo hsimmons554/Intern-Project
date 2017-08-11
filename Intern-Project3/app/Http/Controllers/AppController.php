@@ -23,7 +23,8 @@ class AppController extends Controller
     }
 
     // Handles the GET request for all people data
-    public function showPeople() {
+    public function showPeople()
+    {
         $person = Person::orderBy('first_name')->orderBy('last_name')->get();
         return $person;
     }
@@ -38,11 +39,13 @@ class AppController extends Controller
     // Handles the GET request for states for a specific person
     public function statesByPerson(Person $id)
     {
-
+        $list = $id->states()->orderBy('state_name')->get();
+        return $list;
     }
 
     // Handles the POST request to add a person record
-    public function storePeople() {
+    public function storePeople()
+    {
       Person::create([
         'first_name' => request('first_name'),
         'last_name' => request('last_name'),
@@ -53,13 +56,10 @@ class AppController extends Controller
     }
 
     // Handles the POST request to add a visit record
-    public function storeVisits()
+    public function storeVisits(Person $prs_id)
     {
-      Visit::create([
-          'person_id' => request('prs_id'),
-          'state_id' => request('ste_id')
-      ]);
-      $record = Visit::orderBy('id', 'desc')->first();
+      $prs_id->states()->attach(request('ste_id'));
+      $record = $prs_id->states()->orderBy('person_state.created_at', 'desc')->first();
       return $record;
     }
 }

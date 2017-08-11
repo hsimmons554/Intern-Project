@@ -13,7 +13,7 @@
 
 Route::get('/', 'AppController@index');
 Route::post('/people', 'AppController@storePeople');
-Route::post('/visit', 'AppController@storeVisits');
+Route::post('/visit/{prs_id}', 'AppController@storeVisits');
 
 //Route::get('/api/people', 'PersonController@show');
 //Route::get('/api.php?{args}', 'PersonController@show');

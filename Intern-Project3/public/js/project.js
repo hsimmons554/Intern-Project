@@ -73,7 +73,7 @@ $(Document).ready(function(){
   $("#submit_visit").click(function(){
     var prs_id = $("#add_vis_prs_list").val();
     var ste_id = $("#add_vis_state_list").val();
-    $.post("/visit",
+    $.post("/visit/" + prs_id,
     {
       '_token': $('meta[name=csrf-token]').attr('content'),
       prs_id: prs_id,
@@ -81,9 +81,9 @@ $(Document).ready(function(){
     },
     function(data, status){
       var obj = data;
-      if(!obj.id || !obj.person_id || !obj.state_id){
-        alert("Something went wrong.\nVisit ID: "+obj.id +
-              "\Person ID: "+obj.person_id + "\nState ID: " + obj.state_id);
+      if(!obj.id || !obj.person_state.person_id || !obj.state_name){
+        alert("Something went wrong.\nState ID: "+obj.id +
+              "\"Person ID: "+obj.person_state.person_id + "\nState Name: " + obj.state_name);
       }
     });
   });
